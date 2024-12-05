@@ -24,6 +24,34 @@ chrome.action.onClicked.addListener(async function (tab) {
     }
 });
 
+chrome.tabs.onUpdated.addListener(async function (tabId, changeInfo, tab) {
+    if (changeInfo.status === 'complete') {
+        updateIcon(tab);
+    }
+});
+
+chrome.tabs.onActivated.addListener(async function (activeInfo) {
+    const tab = await getCurrentTab();
+    updateIcon(tab);
+});
+
+async function updateIcon(tab) {
+    const currentUrl = tab.url;
+    if (currentUrl.includes('paramountplus.com')) {
+        chrome.action.setIcon({ path: {
+            "16": "icons/icon16.png",
+            "48": "icons/icon48.png",
+            "128": "icons/icon128.png"
+        }, tabId: tab.id });
+    } else {
+        chrome.action.setIcon({ path: {
+            "16": "icons/icon16_grey.png",
+            "48": "icons/icon48_grey.png",
+            "128": "icons/icon128_grey.png"
+        }, tabId: tab.id });
+    }
+}
+
 async function getCurrentTab() {
     const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
     return tabs[0];
